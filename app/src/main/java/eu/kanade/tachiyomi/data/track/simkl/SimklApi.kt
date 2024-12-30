@@ -3,8 +3,8 @@ package eu.kanade.tachiyomi.data.track.simkl
 import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
-import eu.kanade.tachiyomi.data.database.models.anime.AnimeTrack
-import eu.kanade.tachiyomi.data.track.model.AnimeTrackSearch
+import eu.kanade.tachiyomi.data.database.models.AnimeTrack
+import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.data.track.simkl.dto.SimklOAuth
 import eu.kanade.tachiyomi.data.track.simkl.dto.SimklSearchResult
 import eu.kanade.tachiyomi.data.track.simkl.dto.SimklSyncResult
@@ -88,11 +88,17 @@ class SimklApi(private val client: OkHttpClient, interceptor: SimklInterceptor) 
     private suspend fun updateProgress(track: AnimeTrack) {
         // first remove
         authClient.newCall(
-            POST("$API_URL/sync/history/remove", body = buildProgressObject(track, false)),
+            POST(
+                "$API_URL/sync/history/remove",
+                body = buildProgressObject(track, false),
+            ),
         ).awaitSuccess()
         // then add again
         authClient.newCall(
-            POST("$API_URL/sync/history", body = buildProgressObject(track, true)),
+            POST(
+                "$API_URL/sync/history",
+                body = buildProgressObject(track, true),
+            ),
         ).awaitSuccess()
     }
 
@@ -140,7 +146,7 @@ class SimklApi(private val client: OkHttpClient, interceptor: SimklInterceptor) 
         }
     }
 
-    suspend fun searchAnime(search: String, type: String): List<AnimeTrackSearch> {
+    suspend fun searchAnime(search: String, type: String): List<TrackSearch> {
         return withIOContext {
             val searchUrl = "$API_URL/search/$type".toUri().buildUpon()
                 .appendQueryParameter("q", search)

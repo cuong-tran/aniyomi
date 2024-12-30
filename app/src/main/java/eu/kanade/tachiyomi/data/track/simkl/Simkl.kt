@@ -3,10 +3,10 @@ package eu.kanade.tachiyomi.data.track.simkl
 import android.graphics.Color
 import dev.icerock.moko.resources.StringResource
 import eu.kanade.tachiyomi.R
-import eu.kanade.tachiyomi.data.database.models.anime.AnimeTrack
+import eu.kanade.tachiyomi.data.database.models.AnimeTrack
 import eu.kanade.tachiyomi.data.track.AnimeTracker
 import eu.kanade.tachiyomi.data.track.BaseTracker
-import eu.kanade.tachiyomi.data.track.model.AnimeTrackSearch
+import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.data.track.simkl.dto.SimklOAuth
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -14,7 +14,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import tachiyomi.i18n.MR
 import uy.kohesive.injekt.injectLazy
-import tachiyomi.domain.track.anime.model.AnimeTrack as DomainAnimeTrack
+import tachiyomi.domain.track.model.Track as DomainAnimeTrack
 
 class Simkl(id: Long) : BaseTracker(id, "Simkl"), AnimeTracker {
 
@@ -79,7 +79,7 @@ class Simkl(id: Long) : BaseTracker(id, "Simkl"), AnimeTracker {
         }
     }
 
-    override suspend fun searchAnime(query: String): List<AnimeTrackSearch> {
+    override suspend fun searchAnime(query: String): List<TrackSearch> {
         return api.searchAnime(query, "anime") +
             api.searchAnime(query, "tv") +
             api.searchAnime(query, "movie")

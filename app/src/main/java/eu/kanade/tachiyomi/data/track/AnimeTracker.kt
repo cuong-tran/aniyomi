@@ -2,24 +2,24 @@ package eu.kanade.tachiyomi.data.track
 
 import android.app.Application
 import dev.icerock.moko.resources.StringResource
-import eu.kanade.domain.track.anime.interactor.AddAnimeTracks
-import eu.kanade.domain.track.anime.model.toDomainTrack
-import eu.kanade.tachiyomi.data.database.models.anime.AnimeTrack
-import eu.kanade.tachiyomi.data.track.model.AnimeTrackSearch
+import eu.kanade.domain.track.interactor.AddTracks
+import eu.kanade.domain.track.model.toDomainTrack
+import eu.kanade.tachiyomi.data.database.models.AnimeTrack
+import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.collections.immutable.ImmutableList
 import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withIOContext
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.track.anime.interactor.InsertAnimeTrack
+import tachiyomi.domain.track.interactor.InsertTrack
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import uy.kohesive.injekt.injectLazy
-import tachiyomi.domain.track.anime.model.AnimeTrack as DomainAnimeTrack
+import tachiyomi.domain.track.model.Track as DomainAnimeTrack
 
-private val addTracks: AddAnimeTracks by injectLazy()
-private val insertTrack: InsertAnimeTrack by injectLazy()
+private val addTracks: AddTracks by injectLazy()
+private val insertTrack: InsertTrack by injectLazy()
 
 interface AnimeTracker {
 
@@ -50,7 +50,7 @@ interface AnimeTracker {
 
     suspend fun bind(track: AnimeTrack, hasSeenEpisodes: Boolean = false): AnimeTrack
 
-    suspend fun searchAnime(query: String): List<AnimeTrackSearch>
+    suspend fun searchAnime(query: String): List<TrackSearch>
 
     suspend fun refresh(track: AnimeTrack): AnimeTrack
 

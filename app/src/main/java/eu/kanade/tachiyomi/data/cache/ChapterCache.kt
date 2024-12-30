@@ -3,17 +3,12 @@ package eu.kanade.tachiyomi.data.cache
 import android.content.Context
 import android.text.format.Formatter
 import com.jakewharton.disklrucache.DiskLruCache
-import eu.kanade.tachiyomi.source.model.Page
 import eu.kanade.tachiyomi.util.storage.DiskUtil
 import eu.kanade.tachiyomi.util.storage.saveTo
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import logcat.LogPriority
 import okhttp3.Response
-import okio.buffer
-import okio.sink
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.items.chapter.model.Chapter
 import java.io.File
 import java.io.IOException
 
@@ -55,57 +50,6 @@ class ChapterCache(
      */
     val readableSize: String
         get() = Formatter.formatFileSize(context, realSize)
-
-    /**
-     * Get page list from cache.
-     *
-     * @param chapter the chapter.
-     * @return the list of pages.
-     */
-    fun getPageListFromCache(chapter: Chapter): List<Page> {
-        // Get the key for the chapter.
-        val key = DiskUtil.hashKeyForDisk(getKey(chapter))
-
-        // Convert JSON string to list of objects. Throws an exception if snapshot is null
-        return diskCache.get(key).use {
-            json.decodeFromString(it.getString(0))
-        }
-    }
-
-    /**
-     * Add page list to disk cache.
-     *
-     * @param chapter the chapter.
-     * @param pages list of pages.
-     */
-    fun putPageListToCache(chapter: Chapter, pages: List<Page>) {
-        // Convert list of pages to json string.
-        val cachedValue = json.encodeToString(pages)
-
-        // Initialize the editor (edits the values for an entry).
-        var editor: DiskLruCache.Editor? = null
-
-        try {
-            // Get editor from md5 key.
-            val key = DiskUtil.hashKeyForDisk(getKey(chapter))
-            editor = diskCache.edit(key) ?: return
-
-            // Write chapter urls to cache.
-            editor.newOutputStream(0).sink().buffer().use {
-                it.write(cachedValue.toByteArray())
-                it.flush()
-            }
-
-            diskCache.flush()
-            editor.commit()
-            editor.abortUnlessCommitted()
-        } catch (e: Exception) {
-            logcat(LogPriority.WARN, e) { "Failed to put page list to cache" }
-            // Ignore.
-        } finally {
-            editor?.abortUnlessCommitted()
-        }
-    }
 
     /**
      * Returns true if image is in cache.
@@ -192,10 +136,6 @@ class ChapterCache(
             logcat(LogPriority.WARN, e) { "Failed to remove file from cache" }
             false
         }
-    }
-
-    private fun getKey(chapter: Chapter): String {
-        return "${chapter.mangaId}${chapter.url}"
     }
 }
 

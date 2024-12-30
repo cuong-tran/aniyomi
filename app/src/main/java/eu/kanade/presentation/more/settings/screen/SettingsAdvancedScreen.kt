@@ -25,20 +25,15 @@ import androidx.core.net.toUri
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import eu.kanade.domain.base.BasePreferences
-import eu.kanade.domain.extension.anime.interactor.TrustAnimeExtension
-import eu.kanade.domain.extension.manga.interactor.TrustMangaExtension
+import eu.kanade.domain.extension.interactor.TrustExtension
 import eu.kanade.domain.source.service.SourcePreferences
 import eu.kanade.domain.source.service.SourcePreferences.DataSaver
 import eu.kanade.presentation.more.settings.Preference
-import eu.kanade.presentation.more.settings.screen.advanced.ClearAnimeDatabaseScreen
 import eu.kanade.presentation.more.settings.screen.advanced.ClearDatabaseScreen
 import eu.kanade.presentation.more.settings.screen.debug.DebugInfoScreen
-import eu.kanade.tachiyomi.data.download.anime.AnimeDownloadCache
-import eu.kanade.tachiyomi.data.download.manga.MangaDownloadCache
-import eu.kanade.tachiyomi.data.library.anime.AnimeLibraryUpdateJob
-import eu.kanade.tachiyomi.data.library.anime.AnimeMetadataUpdateJob
-import eu.kanade.tachiyomi.data.library.manga.MangaLibraryUpdateJob
-import eu.kanade.tachiyomi.data.library.manga.MangaMetadataUpdateJob
+import eu.kanade.tachiyomi.data.download.DownloadCache
+import eu.kanade.tachiyomi.data.library.LibraryUpdateJob
+import eu.kanade.tachiyomi.data.library.MetadataUpdateJob
 import eu.kanade.tachiyomi.network.NetworkHelper
 import eu.kanade.tachiyomi.network.NetworkPreferences
 import eu.kanade.tachiyomi.network.PREF_DOH_360
@@ -69,11 +64,10 @@ import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.launch
 import logcat.LogPriority
 import okhttp3.Headers
-import tachiyomi.core.common.i18n.stringResource
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.lang.withUIContext
 import tachiyomi.core.common.util.system.logcat
-import tachiyomi.domain.entries.manga.interactor.ResetMangaViewerFlags
+import tachiyomi.domain.anime.interactor.ResetViewerFlags
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.util.collectAsState
@@ -195,8 +189,7 @@ object SettingsAdvancedScreen : SearchableSettings {
                     title = stringResource(MR.strings.pref_invalidate_download_cache),
                     subtitle = stringResource(MR.strings.pref_invalidate_download_cache_summary),
                     onClick = {
-                        Injekt.get<MangaDownloadCache>().invalidateCache()
-                        Injekt.get<AnimeDownloadCache>().invalidateCache()
+                        Injekt.get<DownloadCache>().invalidateCache()
                         context.toast(MR.strings.download_cache_invalidated)
                     },
                 ),
@@ -208,7 +201,7 @@ object SettingsAdvancedScreen : SearchableSettings {
                 Preference.PreferenceItem.TextPreference(
                     title = stringResource(MR.strings.pref_clear_anime_database),
                     subtitle = stringResource(MR.strings.pref_clear_anime_database_summary),
-                    onClick = { navigator.push(ClearAnimeDatabaseScreen()) },
+                    onClick = { navigator.push(ClearDatabaseScreen()) },
                 ),
             ),
         )
@@ -316,10 +309,8 @@ object SettingsAdvancedScreen : SearchableSettings {
                 Preference.PreferenceItem.TextPreference(
                     title = stringResource(MR.strings.pref_refresh_library_covers),
                     onClick = {
-                        AnimeLibraryUpdateJob.startNow(context)
-                        MangaLibraryUpdateJob.startNow(context)
-                        AnimeMetadataUpdateJob.startNow(context)
-                        MangaMetadataUpdateJob.startNow(context)
+                        LibraryUpdateJob.startNow(context)
+                        MetadataUpdateJob.startNow(context)
                     },
                 ),
                 Preference.PreferenceItem.TextPreference(
@@ -327,7 +318,7 @@ object SettingsAdvancedScreen : SearchableSettings {
                     subtitle = stringResource(MR.strings.pref_reset_viewer_flags_summary),
                     onClick = {
                         scope.launchNonCancellable {
-                            val success = Injekt.get<ResetMangaViewerFlags>().await()
+                            val success = Injekt.get<ResetViewerFlags>().await()
                             withUIContext {
                                 val message = if (success) {
                                     MR.strings.pref_reset_viewer_flags_success
@@ -379,8 +370,7 @@ object SettingsAdvancedScreen : SearchableSettings {
         val uriHandler = LocalUriHandler.current
         val extensionInstallerPref = basePreferences.extensionInstaller()
         var shizukuMissing by rememberSaveable { mutableStateOf(false) }
-        val trustAnimeExtension = remember { Injekt.get<TrustAnimeExtension>() }
-        val trustMangaExtension = remember { Injekt.get<TrustMangaExtension>() }
+        val trustExtension = remember { Injekt.get<TrustExtension>() }
 
         if (shizukuMissing) {
             val dismiss = { shizukuMissing = false }
@@ -440,8 +430,7 @@ object SettingsAdvancedScreen : SearchableSettings {
                 Preference.PreferenceItem.TextPreference(
                     title = stringResource(MR.strings.ext_revoke_trust),
                     onClick = {
-                        trustMangaExtension.revokeAll()
-                        trustAnimeExtension.revokeAll()
+                        trustExtension.revokeAll()
                         context.toast(MR.strings.requires_app_restart)
                     },
                 ),

@@ -33,9 +33,6 @@ import eu.kanade.tachiyomi.data.coil.AnimeCoverFetcher
 import eu.kanade.tachiyomi.data.coil.AnimeCoverKeyer
 import eu.kanade.tachiyomi.data.coil.AnimeKeyer
 import eu.kanade.tachiyomi.data.coil.BufferedSourceFetcher
-import eu.kanade.tachiyomi.data.coil.MangaCoverFetcher
-import eu.kanade.tachiyomi.data.coil.MangaCoverKeyer
-import eu.kanade.tachiyomi.data.coil.MangaKeyer
 import eu.kanade.tachiyomi.data.coil.TachiyomiImageDecoder
 import eu.kanade.tachiyomi.data.notification.Notifications
 import eu.kanade.tachiyomi.di.AppModule
@@ -62,8 +59,7 @@ import tachiyomi.core.common.preference.Preference
 import tachiyomi.core.common.preference.PreferenceStore
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.i18n.MR
-import tachiyomi.presentation.widget.entries.anime.AnimeWidgetManager
-import tachiyomi.presentation.widget.entries.manga.MangaWidgetManager
+import tachiyomi.presentation.widget.WidgetManager
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
 import uy.kohesive.injekt.injectLazy
@@ -137,11 +133,7 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
         setAppCompatDelegateThemeMode(Injekt.get<UiPreferences>().themeMode().get())
 
         // Updates widget update
-        with(MangaWidgetManager(Injekt.get(), Injekt.get())) {
-            init(ProcessLifecycleOwner.get().lifecycleScope)
-        }
-
-        with(AnimeWidgetManager(Injekt.get(), Injekt.get())) {
+        with(WidgetManager(Injekt.get(), Injekt.get())) {
             init(ProcessLifecycleOwner.get().lifecycleScope)
         }
 
@@ -177,15 +169,11 @@ class App : Application(), DefaultLifecycleObserver, SingletonImageLoader.Factor
                 add(TachiyomiImageDecoder.Factory())
                 // Fetcher.Factory
                 add(BufferedSourceFetcher.Factory())
-                add(MangaCoverFetcher.MangaFactory(callFactoryLazy))
-                add(MangaCoverFetcher.MangaCoverFactory(callFactoryLazy))
                 add(AnimeCoverFetcher.AnimeFactory(callFactoryLazy))
                 add(AnimeCoverFetcher.AnimeCoverFactory(callFactoryLazy))
                 // Keyer
                 add(AnimeKeyer())
-                add(MangaKeyer())
                 add(AnimeCoverKeyer())
-                add(MangaCoverKeyer())
             }
 
             crossfade((300 * this@App.animatorDurationScale).toInt())

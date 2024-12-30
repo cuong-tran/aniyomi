@@ -9,7 +9,7 @@ import okhttp3.Response
 import uy.kohesive.injekt.injectLazy
 import java.io.IOException
 
-class MyAnimeListInterceptor(private val myanimelist: MyAnimeList) : Interceptor {
+class MyAnimeListInterceptor(private val myanimelist: MyList) : Interceptor {
 
     private val json: Json by injectLazy()
 

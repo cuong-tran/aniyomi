@@ -6,15 +6,21 @@ import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import cafe.adriel.voyager.core.model.rememberScreenModel
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import eu.kanade.presentation.components.TabContent
 import eu.kanade.presentation.components.TabbedScreen
+import eu.kanade.presentation.more.storage.StorageScreenContent
 import eu.kanade.presentation.util.Tab
 import eu.kanade.tachiyomi.R
 import eu.kanade.tachiyomi.ui.main.MainActivity
-import eu.kanade.tachiyomi.ui.storage.anime.animeStorageTab
-import eu.kanade.tachiyomi.ui.storage.manga.mangaStorageTab
 import kotlinx.collections.immutable.persistentListOf
 import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.stringResource
@@ -39,7 +45,6 @@ data object StorageTab : Tab {
 
         val tabs = persistentListOf(
             animeStorageTab(),
-            mangaStorageTab(),
         )
         val state = rememberPagerState { tabs.size }
 
@@ -53,4 +58,26 @@ data object StorageTab : Tab {
             (context as? MainActivity)?.ready = true
         }
     }
+}
+
+@Composable
+fun Screen.animeStorageTab(): TabContent {
+    val navigator = LocalNavigator.currentOrThrow
+
+    val screenModel = rememberScreenModel { AnimeStorageScreenModel() }
+    val state by screenModel.state.collectAsState()
+
+    return TabContent(
+        titleRes = MR.strings.label_anime,
+        content = { contentPadding, _ ->
+            StorageScreenContent(
+                state = state,
+                isManga = false,
+                contentPadding = contentPadding,
+                onCategorySelected = screenModel::setSelectedCategory,
+                onDelete = screenModel::deleteEntry,
+            )
+        },
+        navigateUp = navigator::pop,
+    )
 }
