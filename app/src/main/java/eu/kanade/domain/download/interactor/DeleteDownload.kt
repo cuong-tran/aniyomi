@@ -1,4 +1,4 @@
-package eu.kanade.domain.download.anime.interactor
+package eu.kanade.domain.download.interactor
 
 import eu.kanade.tachiyomi.data.download.DownloadManager
 import tachiyomi.core.common.util.lang.withNonCancellableContext

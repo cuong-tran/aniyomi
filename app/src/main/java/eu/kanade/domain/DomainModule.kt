@@ -2,7 +2,7 @@ package eu.kanade.domain
 
 import eu.kanade.domain.anime.interactor.SetAnimeViewerFlags
 import eu.kanade.domain.anime.interactor.UpdateAnime
-import eu.kanade.domain.download.anime.interactor.DeleteDownload
+import eu.kanade.domain.download.interactor.DeleteDownload
 import eu.kanade.domain.episode.interactor.SetSeenStatus
 import eu.kanade.domain.episode.interactor.SyncEpisodesWithSource
 import eu.kanade.domain.extension.interactor.GetAnimeExtensionSources

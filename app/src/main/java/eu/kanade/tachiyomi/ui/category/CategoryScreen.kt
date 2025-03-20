@@ -40,7 +40,7 @@ import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.stringResource
 import tachiyomi.presentation.core.screens.LoadingScreen
 
-data object CategoriesTab : Tab {
+data object CategoryScreen : Tab {
 
     override val options: TabOptions
         @Composable

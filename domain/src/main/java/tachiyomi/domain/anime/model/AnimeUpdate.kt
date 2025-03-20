@@ -21,7 +21,7 @@ data class AnimeUpdate(
     val genre: List<String>? = null,
     val status: Long? = null,
     val thumbnailUrl: String? = null,
-    val animeUpdateStrategy: AnimeUpdateStrategy? = null,
+    val updateStrategy: AnimeUpdateStrategy? = null,
     val initialized: Boolean? = null,
     val version: Long? = null,
 )
@@ -46,7 +46,7 @@ fun Anime.toAnimeUpdate(): AnimeUpdate {
         genre = genre,
         status = status,
         thumbnailUrl = thumbnailUrl,
-        animeUpdateStrategy = updateStrategy,
+        updateStrategy = updateStrategy,
         initialized = initialized,
         version = version,
     )

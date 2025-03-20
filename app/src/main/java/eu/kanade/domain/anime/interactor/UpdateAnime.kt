@@ -70,7 +70,7 @@ class UpdateAnime(
                 genre = remoteAnime.getGenres(),
                 thumbnailUrl = thumbnailUrl,
                 status = remoteAnime.status.toLong(),
-                animeUpdateStrategy = remoteAnime.update_strategy,
+                updateStrategy = remoteAnime.update_strategy,
                 initialized = true,
             ),
         )

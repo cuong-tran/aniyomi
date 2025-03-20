@@ -39,17 +39,17 @@ class SyncEpisodesWithSource(
      *
      * @param rawSourceEpisodes the episodes from the source.
      * @param anime the anime the episodes belong to.
-     * @param animeSource the source the anime belongs to.
+     * @param source the source the anime belongs to.
      * @return Newly added episodes
      */
     suspend fun await(
         rawSourceEpisodes: List<SEpisode>,
         anime: Anime,
-        animeSource: AnimeSource,
+        source: AnimeSource,
         manualFetch: Boolean = false,
         fetchWindow: Pair<Long, Long> = Pair(0, 0),
     ): List<Episode> {
-        if (rawSourceEpisodes.isEmpty() && !animeSource.isLocal()) {
+        if (rawSourceEpisodes.isEmpty() && !source.isLocal()) {
             throw NoResultsException()
         }
 
@@ -83,9 +83,9 @@ class SyncEpisodesWithSource(
             var episode = sourceEpisode
 
             // Update metadata from source if necessary.
-            if (animeSource is AnimeHttpSource) {
+            if (source is AnimeHttpSource) {
                 val sEpisode = episode.toSEpisode()
-                animeSource.prepareNewEpisode(sEpisode, anime.toSAnime())
+                source.prepareNewEpisode(sEpisode, anime.toSAnime())
                 episode = episode.copyFromSEpisode(sEpisode)
             }
 
@@ -122,7 +122,7 @@ class SyncEpisodesWithSource(
                         )
 
                     if (shouldRenameEpisode) {
-                        downloadManager.renameEpisode(animeSource, anime, dbEpisode, episode)
+                        downloadManager.renameEpisode(source, anime, dbEpisode, episode)
                     }
                     var toChangeEpisode = dbEpisode.copy(
                         name = episode.name,

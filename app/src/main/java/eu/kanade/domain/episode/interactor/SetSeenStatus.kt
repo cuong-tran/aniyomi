@@ -1,6 +1,6 @@
 package eu.kanade.domain.episode.interactor
 
-import eu.kanade.domain.download.anime.interactor.DeleteDownload
+import eu.kanade.domain.download.interactor.DeleteDownload
 import logcat.LogPriority
 import tachiyomi.core.common.util.lang.withNonCancellableContext
 import tachiyomi.core.common.util.system.logcat
@@ -46,7 +46,7 @@ class SetSeenStatus(
             return@withNonCancellableContext Result.InternalError(e)
         }
 
-        if (seen && downloadPreferences.removeAfterMarkedAsRead().get()) {
+        if (seen && downloadPreferences.removeAfterMarkedAsSeen().get()) {
             episodesToUpdate
                 .groupBy { it.animeId }
                 .forEach { (animeId, episodes) ->

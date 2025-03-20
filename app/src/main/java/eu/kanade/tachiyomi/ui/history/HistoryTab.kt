@@ -44,7 +44,7 @@ import tachiyomi.i18n.MR
 import tachiyomi.presentation.core.i18n.stringResource
 import uy.kohesive.injekt.injectLazy
 
-data object HistoriesTab : Tab {
+data object HistoryTab : Tab {
 
     override val options: TabOptions
         @Composable
